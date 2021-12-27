@@ -87,6 +87,8 @@ class WebServer
         // Casting from one type to another
         response.StatusCode = (int)statusCode;
 
+        response.AddHeader("Access-Control-Allow-Origin", "*"); 
+
         // Now we need to write to the output stream
         response.OutputStream.Write(buffer, 0, buffer.Length);
         response.Close();
