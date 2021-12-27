@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 namespace ExampleServer.Data;
 
 class TaskModel
@@ -11,6 +12,9 @@ class TaskModel
         Message = message;
     }
 
+    [JsonPropertyName("id")]
     public int Id { get; } // Remove the set; as it will increment with logic above, cannot be assigned an Id outside of this class (no reading or writing to property)
+
+    [JsonPropertyName("message")]
     public string Message { get; set; }
 }
