@@ -51,6 +51,10 @@ class WebServer
 
         // Log the request in teh console, showing the "GET localhost:xxx"
         Console.WriteLine($"\n{request.HttpMethod} {request.Url}");
+
+        // Handle GET request
+        List<TaskModel> tasks = _taskRepository.GetTasks();
+        SendResponse(response, HttpStatusCode.OK, tasks);
     }
 
     // Creating a method to send and use the response in tandem with the browser, building the connection from the ground up
