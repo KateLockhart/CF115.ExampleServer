@@ -1,12 +1,12 @@
 using System.Net; // Using statement for line 9 to have access to HTTPS 
-using System.Text.Json; 
-using ExampleServer.Data; 
+using System.Text.Json;
+using ExampleServer.Data;
 
 namespace ExampleServer.Server;
 
 class WebServer
 {
-    private readonly TaskRepository _taskRepository; 
+    private readonly TaskRepository _taskRepository;
 
     private readonly HttpListener _httpListener = new();
 
@@ -37,25 +37,41 @@ class WebServer
         _httpListener.Close();
     }
 
-    // 
     private void HandleIncomingConnections()
     {
-        // Have the server sit and wait for a connection 
-        // Once a request comes in, it will create a context
-        HttpListenerContext context = _httpListener.GetContext();
+        while (true)
+        {
+            // Have the server sit and wait for a connection 
+            // Once a request comes in, it will create a context
+            HttpListenerContext context = _httpListener.GetContext();
 
-        // Get the Request and Response Objects (references) from the connection context
-        // These are two objects that already exist, we are just accessing them
-        HttpListenerRequest request = context.Request;
-        HttpListenerResponse response = context.Response;
+            // Get the Request and Response Objects (references) from the connection context
+            // These are two objects that already exist, we are just accessing them
+            HttpListenerRequest request = context.Request;
+            HttpListenerResponse response = context.Response;
 
-        // Log the request in teh console, showing the "GET localhost:xxx"
-        Console.WriteLine($"\n{request.HttpMethod} {request.Url}");
+            // Log the request in teh console, showing the "GET localhost:xxx"
+            Console.WriteLine($"\n{request.HttpMethod} {request.Url}");
 
-        // Handle GET request
-        List<TaskModel> tasks = _taskRepository.GetTasks();
-        SendResponse(response, HttpStatusCode.OK, tasks);
+            // Handle GET request
+            HandleGETRequest(request, response);
+        }
     }
+
+    // Method containing all of our GET logic
+    private void HandleGETRequest(HttpListenerRequest request, HttpListenerResponse response)
+    {
+        if (request.Url?.AbsolutePath == "/favicon.ico")
+        {
+            SendResponse(response, HttpStatusCode.OK, null);
+        }
+        else
+        {
+            List<TaskModel> tasks = _taskRepository.GetTasks();
+            SendResponse(response, HttpStatusCode.OK, tasks);
+        }
+    }
+
 
     // Creating a method to send and use the response in tandem with the browser, building the connection from the ground up
     private void SendResponse(HttpListenerResponse response, HttpStatusCode statusCode, object? data)
